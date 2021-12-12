@@ -10,11 +10,12 @@ router.route('/getAll')
     .delete()
     .put()
 
-router.route('/newUser')
-    .post(UserController.newUser)
-
 router.route('/getUser')
     .get(UserController.getUser)
 
+router.route('/addAdmin')
+    .post(UserController.addAdmin)
+
+router.route('/login').post(UserController.login)
 
 module.exports = router

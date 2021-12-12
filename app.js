@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const res = require('express/lib/response')
 const logger = require('morgan')
@@ -6,6 +7,7 @@ const app = express()
 
 const userRoute = require('./routes/user')
 const bodyParser = require('body-parser');
+const req = require('express/lib/request')
 
 //Middlewares
 app.use(logger('dev'))
