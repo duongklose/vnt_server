@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 
 const UserController = require('../controllers/user')
+const passport = require('passport')
+const passportConfig = require('../middlewares/passport')
 
 router.route('/getAll')
     .get(UserController.getAll)
@@ -17,5 +19,9 @@ router.route('/addAdmin')
     .post(UserController.addAdmin)
 
 router.route('/login').post(UserController.login)
+
+router.route('/verify').get(UserController.verifyToken)
+
+// router.route('/secret').get(passport.authenticate('jwt', {session: false }), UserController.secret)
 
 module.exports = router

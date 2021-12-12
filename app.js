@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const res = require('express/lib/response')
 const logger = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
@@ -10,6 +11,7 @@ const bodyParser = require('body-parser');
 const req = require('express/lib/request')
 
 //Middlewares
+app.use(cors())
 app.use(logger('dev'))
 app.use(bodyParser.json())
 

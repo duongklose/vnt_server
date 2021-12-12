@@ -1,5 +1,5 @@
 'use strict';
-var dbConn = require('./../config/db');
+var dbConn = require('../configs/db');
 
 var User = function (user) {
     this.id = user.id;
@@ -41,5 +41,6 @@ User.getUserByUsername = function (username, result) {
         result(null, res)
     });
 }
+
 
 module.exports = User

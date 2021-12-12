@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const JWT = require('jsonwebtoken')
-const {JWT_SECRET} = require('../config/index')
+const { JWT_SECRET } = require('../configs/index')
 
 const encodeToken = (id) => {
     return JWT.sign({
@@ -15,9 +15,9 @@ const addAdmin = (req, res, next) => {
     //check exist username
     User.getUserByUsername(req.body.username, function (err, user) {
         if (err) next(err);
-        if(user.length > 0) return res.status(403).json({ error:{message:'Username is already.'}})
-        else{   //add new Admin
-            User.addAdmin(req.body.username, req.body.pass, req.body.name, function (err, data) {
+        if (user.length > 0) return res.status(403).json({ error: { message: 'Username is already.' } })
+        else {   //add new Admin
+            User.addAdmin(req.body.username, req.body.password, req.body.name, function (err, data) {
                 if (err) next(err)
                 // var u = {
                 //     "id": data.insertId,
@@ -33,7 +33,7 @@ const addAdmin = (req, res, next) => {
             })
         }
     });
-        
+
 }
 
 const getAll = (req, res) => {
@@ -56,9 +56,23 @@ const login = (req, res, next) => {
 
 }
 
+const secret = (req, res, next) => {
+    console.log('Call to secret function.')
+}
+
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization;
+    JWT.verify(token, JWT_SECRET, function (err, data) {
+        if (err) return res.send(401);
+        console.log('data ',data)
+    });
+}
+
 module.exports = {
     addAdmin,
     getAll,
     getUser,
-    login
+    login,
+    secret,
+    verifyToken
 }
