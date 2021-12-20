@@ -7,6 +7,7 @@ const cors = require('cors')
 const app = express()
 
 const userRoute = require('./routes/user')
+const adminRoute = require('./routes/admin')
 const bodyParser = require('body-parser');
 const req = require('express/lib/request')
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json())
 
 //Routes
 app.use('/users', userRoute)
+app.use('/admin', adminRoute)
 //Routes
 app.get('/', (req, res, next) => {
     return res.status(200).json({

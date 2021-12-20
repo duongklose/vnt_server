@@ -24,7 +24,16 @@ User.getAll = function (result) {
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);
-        result(res);
+        result(null, res[0]);
+    });
+};
+
+User.getNumofUser = function (result) {
+    var sql = "Select COUNT(*) as numofuser from users where role = 2";
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
     });
 };
 
@@ -41,6 +50,7 @@ User.getUserByUsername = function (username, result) {
         result(null, res)
     });
 }
+
 
 
 module.exports = User

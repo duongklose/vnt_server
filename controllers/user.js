@@ -19,12 +19,6 @@ const addAdmin = (req, res, next) => {
         else {   //add new Admin
             User.addAdmin(req.body.username, req.body.password, req.body.name, function (err, data) {
                 if (err) next(err)
-                // var u = {
-                //     "id": data.insertId,
-                //     "phone": req.body.phone,
-                //     "password": req.body.password,
-                //     "name": req.body.name
-                // }
 
                 //encode token
                 const token = encodeToken(data.insertId)
@@ -33,10 +27,9 @@ const addAdmin = (req, res, next) => {
             })
         }
     });
-
 }
 
-const getAll = (req, res) => {
+const getAll = (req, res, next) => {
     User.getAll(function (err, users) {
         if (err) next(err);
         return res.status(200).json({ users })
@@ -52,8 +45,22 @@ const getUser = (req, res, next) => {
     });
 }
 
-const login = (req, res, next) => {
-
+const signin = (req, res, next) => {
+    //check exist username
+    User.getUserByUsername(req.body.username, function (err, result) {
+        if (err) next(err);
+        if (result.length < 1) return res.status(403).json({ error: { message: 'Username is not exist.' } })
+        else {
+            if(req.body.password == result[0].pass){
+                const token = encodeToken(result[0].id);
+                const user = result[0];
+                console.log('token ', token)
+                return res.status(200).json({message: 'success',token, user})
+            }else{
+                return res.status(403).json({ error: { message: 'Wrong password' } })
+            }
+        }
+    });
 }
 
 const secret = (req, res, next) => {
@@ -72,7 +79,7 @@ module.exports = {
     addAdmin,
     getAll,
     getUser,
-    login,
     secret,
+    signin,
     verifyToken
 }

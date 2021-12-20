@@ -18,7 +18,7 @@ router.route('/getUser')
 router.route('/addAdmin')
     .post(UserController.addAdmin)
 
-router.route('/login').post(UserController.login)
+router.route('/login').post(UserController.signin)
 
 router.route('/verify').get(UserController.verifyToken)
 
