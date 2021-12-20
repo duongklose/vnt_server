@@ -21,11 +21,32 @@ const addAdmin = (req, res, next) => {
     });
 }
 
+const addTransportation = (req, res, next) => {
+    Transportation.getTransportationByPhone(req.body.phone, function (err, r) {
+        if (err) next(err)
+        if (r.length < 1) {
+            Transportation.addTransportation(req.body.name, req.body.phone, req.body.description, function (err, user) {
+                if (err) next(err);
+                return res.status(201).json({ message: "success" })
+            });
+        }else{
+            return res.status(200).json({ error: { message: 'Phone number is registed.' } })
+        }
+    })
+}
+
+const deleteTransportation = (req, res, next) => {
+    Transportation.deleteTransportation(req.query.phone, function (err, transportation) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
 const getNumOfTransportation = (req, res, next) => {
     Transportation.getNumOfTransportation(function (err, num) {
         if (err) next(err);
         var numOfTransportation = num[0].numoftransportation;
-        return res.status(200).json({numOfTransportation})
+        return res.status(200).json({ numOfTransportation })
     });
 }
 
@@ -33,12 +54,22 @@ const getNumofUser = (req, res, next) => {
     User.getNumofUser(function (err, num) {
         if (err) next(err);
         var numofuser = num[0].numofuser;
-        return res.status(200).json({numofuser})
+        return res.status(200).json({ numofuser })
+    });
+}
+
+const getAllTransportations = (req, res, next) => {
+    Transportation.getAllTransportations(function (err, transportation) {
+        if (err) next(err);
+        return res.status(200).json({ transportation })
     });
 }
 
 module.exports = {
     addAdmin,
+    addTransportation,
+    deleteTransportation,
     getNumOfTransportation,
-    getNumofUser
+    getNumofUser,
+    getAllTransportations
 }
