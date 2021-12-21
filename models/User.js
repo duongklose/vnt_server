@@ -19,12 +19,39 @@ User.addAdmin = function (username, pass, name, result) {
     });
 }
 
+User.blockUser = function (phone, result) {
+    var sql = "UPDATE `users` SET `blocked`= 1 WHERE phone='" + phone + "'";
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+}
+
+User.deleteUser = function (phone, result) {
+    var sql = "DELETE FROM `users` WHERE phone='" + phone + "'";
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
 User.getAll = function (result) {
     var sql = "Select * from users";
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);
         result(null, res[0]);
+    });
+};
+
+User.getAllUsers = function (result) {
+    var sql = "Select * from users where role=2";
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
     });
 };
 
@@ -48,6 +75,15 @@ User.getUserByUsername = function (username, result) {
     dbConn.query("Select * from users where `username`=" +"'"+ username +"'", function (err, res) {
         if (err) result(null, err)
         result(null, res)
+    });
+}
+
+User.unblockUser = function (phone, result) {
+    var sql = "UPDATE `users` SET `blocked`= 0 WHERE phone='" + phone + "'";
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
     });
 }
 

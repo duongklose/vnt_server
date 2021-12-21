@@ -35,10 +35,38 @@ const addTransportation = (req, res, next) => {
     })
 }
 
+const blockUser = (req, res, next) => {
+    User.blockUser(req.query.phone, function (err, user) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
 const deleteTransportation = (req, res, next) => {
     Transportation.deleteTransportation(req.query.phone, function (err, transportation) {
         if (err) next(err);
         return res.status(200).json({ message: "success" })
+    });
+}
+
+const deleteUser = (req, res, next) => {
+    User.deleteUser(req.query.phone, function (err, transportation) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
+const getAllTransportations = (req, res, next) => {
+    Transportation.getAllTransportations(function (err, transportation) {
+        if (err) next(err);
+        return res.status(200).json({ transportation })
+    });
+}
+
+const getAllUsers = (req, res, next) => {
+    User.getAllUsers(function (err, users) {
+        if (err) next(err);
+        return res.status(200).json({ users })
     });
 }
 
@@ -58,18 +86,22 @@ const getNumofUser = (req, res, next) => {
     });
 }
 
-const getAllTransportations = (req, res, next) => {
-    Transportation.getAllTransportations(function (err, transportation) {
+const unblockUser = (req, res, next) => {
+    User.unblockUser(req.query.phone, function (err, user) {
         if (err) next(err);
-        return res.status(200).json({ transportation })
+        return res.status(200).json({ message: "success" })
     });
 }
 
 module.exports = {
     addAdmin,
     addTransportation,
+    blockUser,
     deleteTransportation,
+    deleteUser,
     getNumOfTransportation,
     getNumofUser,
-    getAllTransportations
+    getAllTransportations,
+    getAllUsers,
+    unblockUser
 }
