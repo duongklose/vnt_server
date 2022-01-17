@@ -5,6 +5,9 @@ const UserController = require('../controllers/user')
 const passport = require('passport')
 const passportConfig = require('../middlewares/passport')
 
+router.route('/checkLoggedIn')
+    .get(UserController.checkLoggedIn)
+
 router.route('/getAll')
     .get(UserController.getAll)
     .post()

@@ -9,6 +9,7 @@ var User = function (user) {
     this.phone = user.phone;
     this.email = user.email;
     this.role = user.role;
+    this.token = user.token;
 };
 
 User.addAdmin = function (username, pass, name, result) {
@@ -64,6 +65,15 @@ User.getNumofUser = function (result) {
     });
 };
 
+User.getAllTokenUser = function (result) {
+    var sql = "Select token from users";
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
 User.getUserById = function (id, result) {
     dbConn.query("Select * from users where id=" + id, function (err, res) {
         if (err) result(null, err)
@@ -76,6 +86,11 @@ User.getUserByUsername = function (username, result) {
         if (err) result(null, err)
         result(null, res)
     });
+}
+
+User.saveToken = function (id, token, result) {
+    var sql = "UPDATE `users` SET `token`='" + token + "' WHERE id='" + id + "'";
+    dbConn.query(sql)
 }
 
 User.unblockUser = function (phone, result) {

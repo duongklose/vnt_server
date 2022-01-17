@@ -1,13 +1,14 @@
 const User = require('../models/User');
-const JWT = require('jsonwebtoken')
-const { JWT_SECRET } = require('../configs/index')
+const JWT = require('jsonwebtoken');
+const { JWT_SECRET } = require('../configs/index');
+const { saveToken } = require('../models/User');
 
 const encodeToken = (id) => {
     return JWT.sign({
         iss: "adminVNT",
         sub: id,
         iat: new Date().getTime(),
-        exp: new Date().setDate((new Date().getDate() + 7))
+        exp: new Date().setDate((new Date().getDate() + 365))
     }, JWT_SECRET)
 }
 
@@ -27,6 +28,28 @@ const addAdmin = (req, res, next) => {
             })
         }
     });
+}
+
+const checkLoggedIn = (req, res, next) => {
+    User.getAllTokenUser(function(err, tokens){
+        if(err) next(err)
+        var check = false
+        var token = req.headers.token
+        token = token.replace('"', '')
+        token = token.replace('"', '')
+        console.log("token ", token)
+        for(var i=0; i<tokens.length ; i++){
+            if(token == tokens[i].token){
+                check = true;
+                break;
+            }
+        }
+        if(check == true){
+            return res.status(200).json({ message: "success" })
+        }else{
+            return res.status(201).json({ error: {message: "failed"} })
+        }
+    })
 }
 
 const getAll = (req, res, next) => {
@@ -52,19 +75,15 @@ const signin = (req, res, next) => {
         if (result.length < 1) return res.status(403).json({ error: { message: 'Username is not exist.' } })
         else {
             if(req.body.password == result[0].pass){
-                const token = encodeToken(result[0].id);
+                const token = encodeToken(result[0].id)
+                User.saveToken(result[0].id, token)
                 const user = result[0];
-                console.log('token ', token)
                 return res.status(200).json({message: 'success',token, user})
             }else{
                 return res.status(403).json({ error: { message: 'Wrong password' } })
             }
         }
     });
-}
-
-const secret = (req, res, next) => {
-    console.log('Call to secret function.')
 }
 
 const verifyToken = (req, res, next) => {
@@ -77,9 +96,9 @@ const verifyToken = (req, res, next) => {
 
 module.exports = {
     addAdmin,
+    checkLoggedIn,
     getAll,
     getUser,
-    secret,
     signin,
     verifyToken
 }

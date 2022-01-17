@@ -1,4 +1,5 @@
 const Vehicle = require('../models/Vehicle')
+const Trip = require('../models/Trip')
 
 const addVehicle = (req, res, next) => {
     Vehicle.getVehicleByLicensePlate(req.body.license_plate, function (err, r) {
@@ -44,6 +45,13 @@ const getAllVehicleType = (req, res, next) => {
     });
 }
 
+const getTransportationTrips = (req, res, next) => {
+    Trip.getTransportationVehicles(req.query.idTransportation, function (err, trips) {
+        if (err) next(err);
+        return res.status(201).json({ trips })
+    });
+}
+
 const getTransportationVehicles = (req, res, next) => {
     Vehicle.getTransportationVehicles(req.query.idTransportation, function (err, vehicles) {
         if (err) next(err);
@@ -55,5 +63,6 @@ module.exports = {
     addVehicle,
     deleteVehicle,
     getAllVehicleType,
+    getTransportationTrips,
     getTransportationVehicles
 }

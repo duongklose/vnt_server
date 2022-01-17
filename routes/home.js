@@ -9,6 +9,8 @@ router.route('/deleteVehicle').delete(HomeController.deleteVehicle)
 
 router.route('/getAllVehicleType').get(HomeController.getAllVehicleType)
 
+router.route('/getTransportationTrips').get(HomeController.getTransportationTrips)
+
 router.route('/getTransportationVehicles').get(HomeController.getTransportationVehicles)
 
 module.exports = router
