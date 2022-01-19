@@ -27,6 +27,15 @@ Vehicle.deleteVehicle = function (phone, result) {
     });
 };
 
+Vehicle.getAllVehicle = function (id_transportation, result) {
+    var sql = "SELECT coaches.id, coaches.license_plate, coaches.phone, coach_type.name as type FROM `coaches`, `coach_type` where coaches.type = coach_type.id AND coaches.id_transportation=" + id_transportation;
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
 Vehicle.getAllVehicleType = function (result) {
     var sql = "SELECT * FROM `coach_type`";
     dbConn.query(sql, function (err, res) {

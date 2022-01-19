@@ -1,5 +1,6 @@
 const Vehicle = require('../models/Vehicle')
 const Trip = require('../models/Trip')
+const Station = require('../models/Stations')
 
 const addVehicle = (req, res, next) => {
     Vehicle.getVehicleByLicensePlate(req.body.license_plate, function (err, r) {
@@ -38,10 +39,31 @@ const deleteVehicle = (req, res, next) => {
     });
 }
 
+const getAllProvince = (req, res, next) => {
+    Station.getAllProvince(function (err, provinces) {
+        if (err) next(err);
+        return res.status(200).json({ provinces })
+    });
+}
+
+const getAllVehicle = (req, res, next) => {
+    Vehicle.getAllVehicle(req.query.id_transportation, function (err, vehicles) {
+        if (err) next(err);
+        return res.status(200).json({ vehicles })
+    });
+}
+
 const getAllVehicleType = (req, res, next) => {
     Vehicle.getAllVehicleType(function (err, vehicle_type) {
         if (err) next(err);
         return res.status(200).json({ vehicle_type })
+    });
+}
+
+const getStations = (req, res, next) => {
+    Station.getStations(req.query.id_province, function (err, stations) {
+        if (err) next(err);
+        return res.status(200).json({ stations })
     });
 }
 
@@ -62,7 +84,10 @@ const getTransportationVehicles = (req, res, next) => {
 module.exports = {
     addVehicle,
     deleteVehicle,
+    getAllProvince,
+    getAllVehicle,
     getAllVehicleType,
+    getStations,
     getTransportationTrips,
     getTransportationVehicles
 }
