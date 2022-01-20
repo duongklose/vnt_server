@@ -2,6 +2,13 @@ const Vehicle = require('../models/Vehicle')
 const Trip = require('../models/Trip')
 const Station = require('../models/Stations')
 
+const addTrip = (req, res, next) => {
+    Trip.addTrip(req.body.id_coach, req.body.price, req.body.start_time, req.body.end_time, req.body.id_start_station, req.body.id_end_station, function(err, r){
+        if(err) next(err)
+        return res.status(201).json({ message: "success" })
+    })
+}
+
 const addVehicle = (req, res, next) => {
     Vehicle.getVehicleByLicensePlate(req.body.license_plate, function (err, r) {
         if (err) next(err)
@@ -82,6 +89,7 @@ const getTransportationVehicles = (req, res, next) => {
 }
 
 module.exports = {
+    addTrip,
     addVehicle,
     deleteVehicle,
     getAllProvince,

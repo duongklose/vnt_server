@@ -28,4 +28,15 @@ Trip.getTransportationVehicles = function (id, result) {
     });
 };
 
+Trip.addTrip = function (id_coach, price, start_time, end_time, id_start_station, id_end_station , result) {
+    var insert = "INSERT INTO `trips`(`id_coach`, `price`, `start_time`, `end_time`, `id_start_location`, `id_end_location`)"
+    var value = "VALUES (" + id_coach + "," + price + ",'" + start_time + "','" + end_time + "'," + id_start_station + "," + id_end_station + ")"
+    var sql = insert + " " + value;
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
 module.exports = Trip

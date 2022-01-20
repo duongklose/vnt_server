@@ -3,6 +3,8 @@ const router = express.Router()
 
 const HomeController = require('../controllers/home')
 
+router.route('/addTrip').post(HomeController.addTrip)
+
 router.route('/addVehicle').post(HomeController.addVehicle)
 
 router.route('/deleteVehicle').delete(HomeController.deleteVehicle)
