@@ -25,7 +25,7 @@ const addTransportation = (req, res, next) => {
     Transportation.getTransportationByPhone(req.body.phone, function (err, r) {
         if (err) next(err)
         if (r.length < 1) {
-            Transportation.addTransportation(req.body.name, req.body.phone, req.body.description, function (err, user) {
+            Transportation.addTransportation(req.body.name, req.body.phone, req.body.description, req.body.logo, function (err, user) {
                 if (err) next(err);
                 return res.status(201).json({ message: "success" })
             });
@@ -93,10 +93,6 @@ const unblockUser = (req, res, next) => {
     });
 }
 
-const uploadImage = (req, res, next) => {
-    
-}
-
 module.exports = {
     addAdmin,
     addTransportation,
@@ -107,6 +103,5 @@ module.exports = {
     getNumofUser,
     getAllTransportations,
     getAllUsers,
-    unblockUser,
-    uploadImage
+    unblockUser
 }

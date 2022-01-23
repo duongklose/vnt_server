@@ -9,8 +9,9 @@ var Transportation = function (transportation) {
     this.rate_point = transportation.rate_point;
 };
 
-Transportation.addTransportation = function (name, phone, description, result) {
-    var sql = "INSERT INTO `transportations`(`name`, `description`, `phone`) VALUES ('" + name + "','" + description + "','"+ phone +"')";
+Transportation.addTransportation = function (name, phone, description, url, result) {
+    var sql = "INSERT INTO `transportations`(`name`, `description`, `phone`, `logo`) VALUES ('" + name + "','" + description + "','"+ phone + "','" + url +"')";
+    console.log("sql " + sql)
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);

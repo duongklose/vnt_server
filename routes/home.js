@@ -33,6 +33,8 @@ router.route('/getTripByID').get(HomeController.getTripByID)
 
 router.route('/getTrips').get(HomeController.getTrips)
 
+router.route('/mergeTrip').post(HomeController.mergeTrip)
+
 router.route('/returnComment').post(HomeController.returnComment)
 
 router.route('/stopTrip').post(HomeController.stopTrip)

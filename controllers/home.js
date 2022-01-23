@@ -132,6 +132,12 @@ const getTrips = (req, res, next) => {
     });
 }
 
+const mergeTrip = (req, res, next) => {
+    console.log("mergeTrip ", JSON.parse(res.body.list))
+    return res.status(201).json({ message: "merge trip" })
+}
+
+
 const returnComment = (req, res, next) => {
     Review.returnComment(req.body.id, req.body.comment, function (err, comment) {
         if (err) next(err);
@@ -170,6 +176,7 @@ module.exports = {
     getTransportationVehicles,
     getTripByID,
     getTrips,
+    mergeTrip,
     returnComment,
     stopTrip
 }
