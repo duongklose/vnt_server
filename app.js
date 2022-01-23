@@ -3,6 +3,7 @@ const express = require('express')
 const res = require('express/lib/response')
 const logger = require('morgan')
 const cors = require('cors')
+const multer = require('multer');
 
 const app = express()
 
@@ -16,17 +17,19 @@ const req = require('express/lib/request')
 app.use(cors())
 app.use(logger('dev'))
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}));
+app.use('/uploads', express.static('uploads'))
 
 //Routes
 app.use('/users', userRoute)
 app.use('/admin', adminRoute)
 app.use('/', homeRoute)
-//Routes
 app.get('/', (req, res, next) => {
     return res.status(200).json({
         message: 'Server is OK.'
     })
 })
+
 
 //404 error
 app.use((req, res, next) => {

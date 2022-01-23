@@ -93,6 +93,10 @@ const unblockUser = (req, res, next) => {
     });
 }
 
+const uploadImage = (req, res, next) => {
+    
+}
+
 module.exports = {
     addAdmin,
     addTransportation,
@@ -103,5 +107,6 @@ module.exports = {
     getNumofUser,
     getAllTransportations,
     getAllUsers,
-    unblockUser
+    unblockUser,
+    uploadImage
 }

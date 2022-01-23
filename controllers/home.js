@@ -1,6 +1,15 @@
 const Vehicle = require('../models/Vehicle')
 const Trip = require('../models/Trip')
 const Station = require('../models/Stations')
+const Notification = require("../models/Notification")
+const Ticket = require("../models/Ticket")
+const Review = require("../models/Review")
+const Transportation = require("../models/Transportation")
+
+const addNotification = (req, res, next) => {
+    Notification.addNotification(req.body.id_user_from, req.body.id_user_to, req.body.title, req.body.content)
+    return res.status(201).json({ message: "success" })
+}
 
 const addTrip = (req, res, next) => {
     Trip.addTrip(req.body.id_coach, req.body.price, req.body.start_time, req.body.end_time, req.body.id_start_station, req.body.id_end_station, function(err, r){
@@ -39,6 +48,13 @@ const addVehicle = (req, res, next) => {
     })
 }
 
+const deleteTransportationComment = (req, res, next) => {
+    Review.deleteTransportationComment(req.query.id, function (err, comment) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
 const deleteVehicle = (req, res, next) => {
     Vehicle.deleteVehicle(req.query.phone, function (err, vehicle) {
         if (err) next(err);
@@ -67,6 +83,13 @@ const getAllVehicleType = (req, res, next) => {
     });
 }
 
+const getDoneTrips = (req, res, next) => {
+    Trip.getDoneTrips(req.query.idTransportation, function (err, trips) {
+        if (err) next(err);
+        return res.status(201).json({ trips })
+    });
+}
+
 const getStations = (req, res, next) => {
     Station.getStations(req.query.id_province, function (err, stations) {
         if (err) next(err);
@@ -74,10 +97,17 @@ const getStations = (req, res, next) => {
     });
 }
 
-const getTransportationTrips = (req, res, next) => {
-    Trip.getTransportationVehicles(req.query.idTransportation, function (err, trips) {
+const getReviews = (req, res, next) => {
+    Review.getReviews(req.query.idTransportation, function (err, reviews) {
         if (err) next(err);
-        return res.status(201).json({ trips })
+        return res.status(200).json({ reviews })
+    });
+}
+
+const getTransportation = (req, res, next) => {
+    Transportation.getTransportationByID(req.query.idTransportation, function (err, transportation) {
+        if (err) next(err);
+        return res.status(201).json({ transportation })
     });
 }
 
@@ -88,14 +118,58 @@ const getTransportationVehicles = (req, res, next) => {
     });
 }
 
+const getTripByID = (req, res, next) => {
+    Trip.getTripByID(req.query.idTrip, function (err, trip) {
+        if (err) next(err);
+        return res.status(201).json({ trip })
+    });
+}
+
+const getTrips = (req, res, next) => {
+    Trip.getTrips(req.query.idTransportation, function (err, trips) {
+        if (err) next(err);
+        return res.status(201).json({ trips })
+    });
+}
+
+const returnComment = (req, res, next) => {
+    Review.returnComment(req.body.id, req.body.comment, function (err, comment) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
+const stopTrip = (req, res, next) => {
+    //gui thong bao den khach da dat ve chuyen di nay
+    Ticket.getUsersBookTrip(req.query.idTrip, function (err, users) {
+        if (err) next(err);
+        for(var i=0; i<users.length; i++){
+            Notification.addNotification(req.body.id_user_from, users[i].id_user, req.body.title, req.body.content)
+        }
+    });
+    //xoa chuyen di
+    Trip.stopTrip(req.query.idTrip, function (err, trips) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
 module.exports = {
+    addNotification,
     addTrip,
     addVehicle,
+    deleteTransportationComment,
     deleteVehicle,
     getAllProvince,
     getAllVehicle,
     getAllVehicleType,
+    getDoneTrips,
     getStations,
-    getTransportationTrips,
-    getTransportationVehicles
+    getReviews,
+    getTransportation,
+    getTransportationVehicles,
+    getTripByID,
+    getTrips,
+    returnComment,
+    stopTrip
 }

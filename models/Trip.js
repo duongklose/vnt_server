@@ -16,10 +16,33 @@ var Trip = function (trip) {
     this.price = trip.price;
 };
 
-Trip.getTransportationVehicles = function (id, result) {
+Trip.addTrip = function (id_coach, price, start_time, end_time, id_start_station, id_end_station , result) {
+    var insert = "INSERT INTO `trips`(`id_coach`, `price`, `start_time`, `end_time`, `id_start_location`, `id_end_location`)"
+    var value = "VALUES (" + id_coach + "," + price + ",'" + start_time + "','" + end_time + "'," + id_start_station + "," + id_end_station + ")"
+    var sql = insert + " " + value;
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
+Trip.getTripByID = function (id, result) {
+    var select = "SELECT trips.id as id, p1.name as start_province, p2.name as end_province, s1.name as start_station, s2.name as end_station, s1.address as start_address, s2.address as end_address, trips.start_time, trips.end_time, coaches.license_plate, coach_type.name as vehicle_type, trips.price , booked_tickets.num";
+    var from = "FROM trips, coaches, coach_type, stations as s1, stations as s2, provinces as p1, provinces as p2, (SELECT trips.id, COUNT(*) AS num FROM tickets, trips WHERE trips.id = tickets.id_trip AND tickets.id_trip = "+ id +") as booked_tickets ";
+    var where = "WHERE trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 0 AND booked_tickets.id = trips.id AND trips.id = " + id;
+    var sql = select + " " + from + " " + where;
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
+Trip.getDoneTrips = function (id, result) {
     var select = "SELECT trips.id as id, p1.name as start_province, p2.name as end_province, s1.name as start_station, s2.name as end_station, s1.address as start_address, s2.address as end_address, trips.start_time, trips.end_time, coaches.license_plate, coach_type.name as vehicle_type, trips.price";
     var from = " FROM trips, coaches, coach_type, stations as s1, stations as s2, provinces as p1, provinces as p2";
-    var where = " WHERE trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND coaches.id_transportation = " + id;
+    var where = " WHERE trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 1 AND coaches.id_transportation = " + id;
     var sql = select + from + where;
     dbConn.query(sql, function (err, res) {
         if (err)
@@ -28,10 +51,20 @@ Trip.getTransportationVehicles = function (id, result) {
     });
 };
 
-Trip.addTrip = function (id_coach, price, start_time, end_time, id_start_station, id_end_station , result) {
-    var insert = "INSERT INTO `trips`(`id_coach`, `price`, `start_time`, `end_time`, `id_start_location`, `id_end_location`)"
-    var value = "VALUES (" + id_coach + "," + price + ",'" + start_time + "','" + end_time + "'," + id_start_station + "," + id_end_station + ")"
-    var sql = insert + " " + value;
+Trip.getTrips = function (id, result) {
+    var select = "SELECT trips.id as id, p1.name as start_province, p2.name as end_province, s1.name as start_station, s2.name as end_station, s1.address as start_address, s2.address as end_address, trips.start_time, trips.end_time, coaches.license_plate, coach_type.name as vehicle_type, trips.price";
+    var from = " FROM trips, coaches, coach_type, stations as s1, stations as s2, provinces as p1, provinces as p2";
+    var where = " WHERE trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 0 AND coaches.id_transportation = " + id;
+    var sql = select + from + where;
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
+
+Trip.stopTrip = function (id_trip , result) {
+    var sql = "UPDATE `trips` SET `state`= 2 WHERE id = " + id_trip;
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);

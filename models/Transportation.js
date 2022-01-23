@@ -54,6 +54,14 @@ Transportation.getTransportationByPhone = function (phone, result) {
     });
 };
 
+Transportation.getTransportationByID = function (id, result) {
+    var sql = "Select * from transportations where id=" + id;
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+};
 
 
 module.exports = Transportation
