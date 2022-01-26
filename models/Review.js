@@ -19,7 +19,7 @@ Review.deleteTransportationComment = function (id, result) {
 };
 
 Review.getReviews = function (id_transportation, result) {
-    var sql = "SELECT reviews.id, users.name, reviews.comment, reviews.return_comment, reviews.point FROM `reviews`, `users` WHERE users.id = reviews.id_user AND reviews.id_transportation = " + id_transportation;
+    var sql = "SELECT reviews.id, users.name, users.avatar, reviews.comment, reviews.return_comment, reviews.point FROM `reviews`, `users` WHERE users.id = reviews.id_user AND reviews.id_transportation = " + id_transportation;
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);
