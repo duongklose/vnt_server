@@ -1,3 +1,5 @@
+const path = require('path')
+const fileSystem = require('fs')
 const Vehicle = require('../models/Vehicle')
 const Trip = require('../models/Trip')
 const Station = require('../models/Stations')
@@ -5,6 +7,7 @@ const Notification = require("../models/Notification")
 const Ticket = require("../models/Ticket")
 const Review = require("../models/Review")
 const Transportation = require("../models/Transportation")
+const MergeTrip = require('../models/MergeTrip')
 
 const addNotification = (req, res, next) => {
     Notification.addNotification(req.body.id_user_from, req.body.id_user_to, req.body.title, req.body.content)
@@ -12,8 +15,8 @@ const addNotification = (req, res, next) => {
 }
 
 const addTrip = (req, res, next) => {
-    Trip.addTrip(req.body.id_coach, req.body.price, req.body.start_time, req.body.end_time, req.body.id_start_station, req.body.id_end_station, function(err, r){
-        if(err) next(err)
+    Trip.addTrip(req.body.id_coach, req.body.price, req.body.start_time, req.body.end_time, req.body.id_start_station, req.body.id_end_station, function (err, r) {
+        if (err) next(err)
         return res.status(201).json({ message: "success" })
     })
 }
@@ -132,11 +135,83 @@ const getTrips = (req, res, next) => {
     });
 }
 
+// const load = async (listMergeTrip) => {
+//     let result;
+//     listMergeTrip.map((item) => {
+//         Trip.getDetailMergeTrip(item, (trip) => { // trip = err || res
+//             result = trip[0];
+//         }).then(() => {
+//             console.log('result:>>>>', result);
+//             return result;
+//         })
+//     })
+// }
+
+// const mergeTrip = async (req, res, next) => {
+//     var json_data = JSON.parse(req.body.list)
+//     var list_merge_trip = new Array()
+//     for (var i in json_data) {
+//         if (i % 2 == 1) {
+//             list_merge_trip.push(json_data[i]);
+//         }
+//     }
+//     console.log("fuck",list_merge_trip)
+//     var id_merge_trip = new Array();
+//     // load(list_merge_trip);
+//     list_merge_trip.map((item) => {
+//         // let result;
+//         Trip.getDetailMergeTrip(item, (trip) => { // trip = err || res
+//             let result;
+//             result = trip[0];
+//             console.log("ressss",result)
+//             id_merge_trip.push(result)
+//             console.log("lol", id_merge_trip)
+//         })
+//     })
+//     console.log(id_merge_trip)
+//     return res.status(201).json({"message":id_merge_trip})
+// }
+
 const mergeTrip = (req, res, next) => {
-    console.log("mergeTrip ", JSON.parse(res.body.list))
-    return res.status(201).json({ message: "merge trip" })
+    var json_data = JSON.parse(req.body.list)
+    var list_merge_trip = new Array()
+    for (var i in json_data) {
+        if (i % 2 == 1) {
+            list_merge_trip.push(json_data[i]);
+        }
+    }
+    var id_merge_trip = new Array();
+    list_merge_trip.map((item) => {
+        let result = Trip.getDetailMergeTrip(item, (trip) => {
+            id_merge_trip.push(trip[0])
+        });
+    })
+
+    setTimeout(() => {
+        console.log("zzzzzzzzzzzzzzzzz:>>>", id_merge_trip)
+        return res.status(201).json({ message: "merge trip" })
+    }, 1000)
 }
 
+// const mergeTrip = (req, res, next) => {
+//     var json_data = JSON.parse(req.body.list)
+//     var list_merge_trip = new Array()
+//     for (var i in json_data) {
+//         if (i % 2 == 1) {
+//             list_merge_trip.push(json_data[i]);
+//         }
+//     }
+//     var id_merge_trip = new Array();
+//     list_merge_trip.map((item) => {
+//         let result = Trip.getDetailMergeTrip(item)
+//         console.log("resultttttttttt:>>>", result)
+//         id_merge_trip.push(result)
+//         console.log("id_merge_trippppppppp:>>>", id_merge_trip)
+//     })
+    
+//     console.log("id_merge_trip_____________:>>>", id_merge_trip)
+//     return res.status(201).json({ message: "merge trip" })
+// }
 
 const returnComment = (req, res, next) => {
     Review.returnComment(req.body.id, req.body.comment, function (err, comment) {
@@ -149,7 +224,7 @@ const stopTrip = (req, res, next) => {
     //gui thong bao den khach da dat ve chuyen di nay
     Ticket.getUsersBookTrip(req.query.idTrip, function (err, users) {
         if (err) next(err);
-        for(var i=0; i<users.length; i++){
+        for (var i = 0; i < users.length; i++) {
             Notification.addNotification(req.body.id_user_from, users[i].id_user, req.body.title, req.body.content)
         }
     });
