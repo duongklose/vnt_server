@@ -135,83 +135,22 @@ const getTrips = (req, res, next) => {
     });
 }
 
-// const load = async (listMergeTrip) => {
-//     let result;
-//     listMergeTrip.map((item) => {
-//         Trip.getDetailMergeTrip(item, (trip) => { // trip = err || res
-//             result = trip[0];
-//         }).then(() => {
-//             console.log('result:>>>>', result);
-//             return result;
-//         })
-//     })
-// }
-
-// const mergeTrip = async (req, res, next) => {
-//     var json_data = JSON.parse(req.body.list)
-//     var list_merge_trip = new Array()
-//     for (var i in json_data) {
-//         if (i % 2 == 1) {
-//             list_merge_trip.push(json_data[i]);
-//         }
-//     }
-//     console.log("fuck",list_merge_trip)
-//     var id_merge_trip = new Array();
-//     // load(list_merge_trip);
-//     list_merge_trip.map((item) => {
-//         // let result;
-//         Trip.getDetailMergeTrip(item, (trip) => { // trip = err || res
-//             let result;
-//             result = trip[0];
-//             console.log("ressss",result)
-//             id_merge_trip.push(result)
-//             console.log("lol", id_merge_trip)
-//         })
-//     })
-//     console.log(id_merge_trip)
-//     return res.status(201).json({"message":id_merge_trip})
-// }
-
-const mergeTrip = (req, res, next) => {
+const mergeTrip = async (req, res, next) => {
     var json_data = JSON.parse(req.body.list)
-    var list_merge_trip = new Array()
+    var list_id_merge_trip = new Array()
     for (var i in json_data) {
         if (i % 2 == 1) {
-            list_merge_trip.push(json_data[i]);
+            list_id_merge_trip.push(json_data[i]);
         }
     }
-    var id_merge_trip = new Array();
-    list_merge_trip.map((item) => {
-        let result = Trip.getDetailMergeTrip(item, (trip) => {
-            id_merge_trip.push(trip[0])
-        });
+    list_merge_trip = await new Promise((rs) => {
+        Trip.getDetailMergeTrips(list_id_merge_trip, (result) => {
+               rs(result)
+            })
     })
-
-    setTimeout(() => {
-        console.log("zzzzzzzzzzzzzzzzz:>>>", id_merge_trip)
-        return res.status(201).json({ message: "merge trip" })
-    }, 1000)
+    console.log("zzzzzzzzzzzzzzzzz:>>>", list_merge_trip)
+   
 }
-
-// const mergeTrip = (req, res, next) => {
-//     var json_data = JSON.parse(req.body.list)
-//     var list_merge_trip = new Array()
-//     for (var i in json_data) {
-//         if (i % 2 == 1) {
-//             list_merge_trip.push(json_data[i]);
-//         }
-//     }
-//     var id_merge_trip = new Array();
-//     list_merge_trip.map((item) => {
-//         let result = Trip.getDetailMergeTrip(item)
-//         console.log("resultttttttttt:>>>", result)
-//         id_merge_trip.push(result)
-//         console.log("id_merge_trippppppppp:>>>", id_merge_trip)
-//     })
-    
-//     console.log("id_merge_trip_____________:>>>", id_merge_trip)
-//     return res.status(201).json({ message: "merge trip" })
-// }
 
 const returnComment = (req, res, next) => {
     Review.returnComment(req.body.id, req.body.comment, function (err, comment) {

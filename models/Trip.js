@@ -53,9 +53,57 @@ Trip.addTrip = function (id_coach, price, start_time, end_time, id_start_station
 // }
 
 Trip.getDetailMergeTrip = function (id, result) {
-    var value = {};
-    var sql = "SELECT trips.id, COUNT(*) AS num, coach_type.num_of_seats as max FROM tickets, trips, coaches, coach_type WHERE trips.id = tickets.id_trip AND trips.id_coach=coaches.id AND coaches.type = coach_type.id AND tickets.id_trip = " + id;
+    var select_from_1 = "SELECT trips.id, coach_type.num_of_seats as max FROM trips, coaches, coach_type"
+    var where_1 = "WHERE trips.id_coach=coaches.id AND coaches.type = coach_type.id AND trips.id = " + id;
+    var general_trip = select_from_1 + " " + where_1;
+
+    var select_from_2 = "SELECT trips.id, COUNT(*) as num from tickets, seats, trips"
+    var where_2 = "WHERE tickets.id_seat=seats.id AND seats.area = 1 AND tickets.id_trip=trips.id AND trips.id = " + id;
+    var front_seats = select_from_2 + " " + where_2;
+
+    var select_from_3 = "SELECT trips.id, COUNT(*) as num from tickets, seats, trips"
+    var where_3 = "WHERE tickets.id_seat=seats.id AND seats.area = 1 AND tickets.id_trip=trips.id AND trips.id = " + id;
+    var back_seats = select_from_3 + " " + where_3;
+
+    var select = "SELECT general_trip.id, front_seats.num as num_front_seats, back_seats.num  as num_back_seats, general_trip.max"
+    var from = "FROM" + " (" +  general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
+    var where = "WHERE general_trip.id=front_seats.id AND general_trip.id=back_seats.id"
+
+    var sql = select + " " + from + " " + where
+
     dbConn.query(sql, function (err, res) {
+        if (err) {
+            result(err);
+        }
+        result(res);
+    });
+};
+
+Trip.getDetailMergeTrips = function (ids, result) {
+    var select_from_1 = "SELECT trips.id as id, coach_type.num_of_seats as max FROM trips, coaches, coach_type"
+    var where_1 = "WHERE trips.id_coach=coaches.id AND coaches.type = coach_type.id AND trips.id IN (" + ids + ")";
+    var general_trip = select_from_1 + " " + where_1;
+
+    var front_seats = `SELECT trips.id as id, SUM(CASE WHEN seats.area = 1 THEN 1 ELSE 0 END) as num FROM trips 
+                    LEFT JOIN tickets ON trips.id = tickets.id_trip 
+                    LEFT JOIN seats ON tickets.id_seat = seats.id  
+                    WHERE trips.id IN (${ids})   
+                    GROUP BY trips.id`
+
+    var back_seats = `SELECT trips.id as id, SUM(CASE WHEN seats.area = 2 THEN 1 ELSE 0 END) as num FROM trips 
+                    LEFT JOIN tickets ON trips.id = tickets.id_trip 
+                    LEFT JOIN seats ON tickets.id_seat = seats.id  
+                    WHERE trips.id IN (${ids})   
+                    GROUP BY trips.id`
+
+    var select = "SELECT general_trip.id, front_seats.num as num_front_seats, back_seats.num  as num_back_seats, general_trip.max"
+    var from = "FROM" + " (" +  general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
+    var where = "WHERE general_trip.id=front_seats.id AND general_trip.id=back_seats.id"
+
+    var sql = select + " " + from + " " + where
+    console.log(sql);
+    dbConn.query(sql, function (err, res) {
+        console.log("=>", res);
         if (err) {
             result(err);
         }
@@ -102,6 +150,7 @@ Trip.getTrips = function (id, result) {
     var from = " FROM trips, coaches, coach_type, stations as s1, stations as s2, provinces as p1, provinces as p2";
     var where = " WHERE trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 0 AND coaches.id_transportation = " + id;
     var sql = select + from + where;
+    console.log(sql)
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);
