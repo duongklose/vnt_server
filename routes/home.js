@@ -13,6 +13,8 @@ router.route('/deleteTransportationComment').post(HomeController.deleteTransport
 
 router.route('/deleteVehicle').delete(HomeController.deleteVehicle)
 
+router.route('/endTrip').post(HomeController.endTrip)
+
 router.route('/getAllProvince').get(HomeController.getAllProvince)
 
 router.route('/getAllVehicle').get(HomeController.getAllVehicle)
@@ -36,6 +38,8 @@ router.route('/getTrips').get(HomeController.getTrips)
 router.route('/mergeTrip').post(HomeController.mergeTrip)
 
 router.route('/returnComment').post(HomeController.returnComment)
+
+router.route('/startTrip').post(HomeController.startTrip)
 
 router.route('/stopTrip').post(HomeController.stopTrip)
 

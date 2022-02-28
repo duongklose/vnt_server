@@ -20,6 +20,14 @@ User.addAdmin = function (username, pass, name, result) {
     });
 }
 
+User.addAccountTranportation = function (username, pass, id_transportation, result) {
+    dbConn.query("INSERT INTO `users`(`username`, `pass`, `role`,`id_transportation`) VALUES ('" + username + "','" + pass + "', 1, '" + id_transportation +  "');", function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+}
+
 User.blockUser = function (phone, result) {
     var sql = "UPDATE `users` SET `blocked`= 1 WHERE phone='" + phone + "'";
     dbConn.query(sql, function (err, res) {

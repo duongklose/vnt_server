@@ -21,6 +21,23 @@ const addAdmin = (req, res, next) => {
     });
 }
 
+const addAccountTranportation = (req, res, next) => {
+    //check exist username
+    User.getUserByUsername(req.body.username, function (err, user) {
+        if (err) next(err);
+        if (user.length > 0) return res.status(403).json({ error: { message: 'Username is already.' } })
+        else {   //add new Account
+            User.addAccountTranportation(req.body.username, req.body.password, req.body.id_transportation, function (err, data) {
+                if (err) next(err)
+                //encode token
+                const token = encodeToken(data.insertId)
+                res.setHeader('Authorization', token)
+                return res.status(201).json({ success: true })
+            })
+        }
+    });
+}
+
 const addTransportation = (req, res, next) => {
     Transportation.getTransportationByPhone(req.body.phone, function (err, r) {
         if (err) next(err)
@@ -95,6 +112,7 @@ const unblockUser = (req, res, next) => {
 
 module.exports = {
     addAdmin,
+    addAccountTranportation,
     addTransportation,
     blockUser,
     deleteTransportation,

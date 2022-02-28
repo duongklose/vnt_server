@@ -5,6 +5,8 @@ const multer = require('multer')
 
 const AdminController = require('../controllers/admin')
 
+router.route('/addAccountTransportation').post(AdminController.addAccountTranportation)
+
 router.route('/addTransportation').post(AdminController.addTransportation)
 
 router.route('/blockUser').patch(AdminController.blockUser)

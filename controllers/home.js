@@ -65,6 +65,13 @@ const deleteVehicle = (req, res, next) => {
     });
 }
 
+const endTrip = (req, res, next) => {
+    Trip.endTrip(req.query.idTrip, function (err, trips) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
 const getAllProvince = (req, res, next) => {
     Station.getAllProvince(function (err, provinces) {
         if (err) next(err);
@@ -159,6 +166,13 @@ const returnComment = (req, res, next) => {
     });
 }
 
+const startTrip = (req, res, next) => {
+    Trip.startTrip(req.query.idTrip, function (err, trips) {
+        if (err) next(err);
+        return res.status(200).json({ message: "success" })
+    });
+}
+
 const stopTrip = (req, res, next) => {
     //gui thong bao den khach da dat ve chuyen di nay
     Ticket.getUsersBookTrip(req.query.idTrip, function (err, users) {
@@ -180,6 +194,7 @@ module.exports = {
     addVehicle,
     deleteTransportationComment,
     deleteVehicle,
+    endTrip,
     getAllProvince,
     getAllVehicle,
     getAllVehicleType,
@@ -192,5 +207,6 @@ module.exports = {
     getTrips,
     mergeTrip,
     returnComment,
+    startTrip,
     stopTrip
 }
