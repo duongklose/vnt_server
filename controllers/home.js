@@ -143,13 +143,9 @@ const getTrips = (req, res, next) => {
 }
 
 const mergeTrip = async (req, res, next) => {
-    var json_data = JSON.parse(req.body.list)
-    var list_id_merge_trip = new Array()
-    for (var i in json_data) {
-        if (i % 2 == 1) {
-            list_id_merge_trip.push(json_data[i]);
-        }
-    }
+    var json_data = JSON.parse(req.body.list).replace('[', '').replace(']', '')
+    var list_id_merge_trip = json_data.split(',')
+    // console.log("zzzzzzzzzzzzzzzzz:>>>", list_id_merge_trip)
     list_merge_trip = await new Promise((rs) => {
         Trip.getDetailMergeTrips(list_id_merge_trip, (result) => {
                rs(result)

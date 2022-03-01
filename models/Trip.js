@@ -85,9 +85,8 @@ Trip.getDetailMergeTrips = function (ids, result) {
     var where = "WHERE general_trip.id=front_seats.id AND general_trip.id=back_seats.id"
 
     var sql = select + " " + from + " " + where
-    console.log(sql);
+    console.log(sql)
     dbConn.query(sql, function (err, res) {
-        console.log("=>", res);
         if (err) {
             result(err);
         }
