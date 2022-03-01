@@ -25,13 +25,10 @@ const addAccountTranportation = (req, res, next) => {
     //check exist username
     User.getUserByUsername(req.body.username, function (err, user) {
         if (err) next(err);
-        if (user.length > 0) return res.status(403).json({ error: { message: 'Username is already.' } })
+        if (user.length > 0) return res.status(200).json({ error: { message: 'Username is already.' } })
         else {   //add new Account
             User.addAccountTranportation(req.body.username, req.body.password, req.body.id_transportation, function (err, data) {
                 if (err) next(err)
-                //encode token
-                const token = encodeToken(data.insertId)
-                res.setHeader('Authorization', token)
                 return res.status(201).json({ success: true })
             })
         }
