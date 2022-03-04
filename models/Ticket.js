@@ -42,7 +42,8 @@ Ticket.getTickets = function (id_trip, result) {
 Ticket.getDetailTickets = function (id_trip, result) {
     var sql = `SELECT tickets.id, users.phone, tickets.departure_location, tickets.arrival_location, seats.alias
                 FROM tickets, users, seats
-                WHERE tickets.id_user = users.id AND tickets.id_seat = seats.id  AND tickets.id_trip = ${id_trip}`;
+                WHERE tickets.id_user = users.id AND tickets.id_seat = seats.id  AND tickets.id_trip = ${id_trip}
+                ORDER BY seats.id ASC`;
     console.log("sql", sql)
                 dbConn.query(sql, function (err, res) {
         if (err)
