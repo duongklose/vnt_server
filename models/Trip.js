@@ -83,9 +83,9 @@ Trip.getDetailMergeTrips = function (ids, result) {
     var select = "SELECT general_trip.id, front_seats.num as num_front_seats, back_seats.num  as num_back_seats, general_trip.max"
     var from = "FROM" + " (" +  general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
     var where = "WHERE general_trip.id=front_seats.id AND general_trip.id=back_seats.id"
+    var order_by = "ORDER BY general_trip.max DESC, front_seats.num DESC"
 
-    var sql = select + " " + from + " " + where
-    console.log(sql)
+    var sql = select + " " + from + " " + where + " " + order_by
     dbConn.query(sql, function (err, res) {
         if (err) {
             result(err);
@@ -94,15 +94,6 @@ Trip.getDetailMergeTrips = function (ids, result) {
     });
 };
 
-// Trip.getDetailMergeTrip = function (id) {
-//     var sql = "SELECT trips.id, COUNT(*) AS num, coach_type.num_of_seats as max FROM tickets, trips, coaches, coach_type WHERE trips.id = tickets.id_trip AND trips.id_coach=coaches.id AND coaches.type = coach_type.id AND tickets.id_trip = " + id;
-//     dbConn.query(sql, function (err, res) {
-//         if (err)
-//             return err
-//         console.log("res " + res)
-//         return res
-//     });
-// };
 
 Trip.getDoneTrips = function (id, result) {
     var select = "SELECT trips.id as id, p1.name as start_province, p2.name as end_province, s1.name as start_station, s2.name as end_station, s1.address as start_address, s2.address as end_address, trips.start_time, trips.end_time, coaches.license_plate, coach_type.name as vehicle_type, trips.price";
@@ -113,6 +104,21 @@ Trip.getDoneTrips = function (id, result) {
         if (err)
             result(null, err);
         result(null, res);
+    });
+};
+
+Trip.getFreeSeats = function (id, result) {
+    var sql = `SELECT list_seats.id
+    FROM (SELECT seats.id FROM seats, tickets, trips, coaches 
+    WHERE tickets.id_trip = trips.id AND trips.id_coach = coaches.id AND coaches.type = seats.id_coach_type AND trips.id = ${id} AND seats.state != 0
+    GROUP BY seats.id) as list_seats
+    LEFT JOIN (SELECT tickets.id_seat FROM tickets, trips, seats WHERE tickets.id_trip = trips.id AND tickets.id_seat = seats.id AND tickets.id_trip = ${id}) as booked_seats
+    ON booked_seats.id_seat = list_seats.id 
+    WHERE booked_seats.id_seat IS NULL`
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result( err);
+        result( res);
     });
 };
 
@@ -129,10 +135,6 @@ Trip.getTripByID = function (id, result) {
 };
 
 Trip.getTrips = function (id, result) {
-    // var select = "SELECT trips.id as id, p1.name as start_province, p2.name as end_province, s1.name as start_station, s2.name as end_station, s1.address as start_address, s2.address as end_address, trips.start_time, trips.end_time, coaches.license_plate, coach_type.name as vehicle_type, trips.price";
-    // var from = " FROM trips, coaches, coach_type, stations as s1, stations as s2, provinces as p1, provinces as p2";
-    // var where = " WHERE trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 0 AND coaches.id_transportation = " + id;
-    // var sql = select + from + where;
     var sql = `SELECT trips.id as id, p1.name as start_province, p2.name as end_province, s1.name as start_station, s2.name as end_station, s1.address as start_address, s2.address as end_address, trips.start_time, trips.end_time, coaches.license_plate, coach_type.name as vehicle_type, trips.price, s.num as booked_ticket, general_trip.max, trips.state
                 FROM trips, coaches, coach_type, stations as s1, stations as s2, provinces as p1, provinces as p2, 
                     (SELECT trips.id as id, coach_type.num_of_seats as max 
@@ -145,8 +147,8 @@ Trip.getTrips = function (id, result) {
                     JOIN coaches ON trips.id_coach = coaches.id
                     WHERE coaches.id_transportation=${id}
                     GROUP BY trips.id) as s
-                WHERE general_trip.id=s.id AND general_trip.id=trips.id AND trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 0 AND coaches.id_transportation = ${id}`
-    console.log(sql)
+                WHERE general_trip.id=s.id AND general_trip.id=trips.id AND trips.id_start_location = s1.id AND trips.id_end_location = s2.id AND s1.id_province = p1.id AND s2.id_province = p2.id AND  trips.id_coach = coaches.id AND coaches.type = coach_type.id AND trips.state = 0 AND coaches.id_transportation = ${id}
+                ORDER BY trips.start_time ASC`
     dbConn.query(sql, function (err, res) {
         if (err)
             result(null, err);

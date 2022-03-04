@@ -114,6 +114,13 @@ const getReviews = (req, res, next) => {
     });
 }
 
+const getDetailTickets = (req, res, next) => {
+    Ticket.getDetailTickets(req.query.idTrip, function (err, tickets) {
+        if (err) next(err);
+        return res.status(201).json({ tickets })
+    });
+}
+
 const getTransportation = (req, res, next) => {
     Transportation.getTransportationByID(req.query.idTransportation, function (err, transportation) {
         if (err) next(err);
@@ -145,14 +152,56 @@ const getTrips = (req, res, next) => {
 const mergeTrip = async (req, res, next) => {
     var json_data = JSON.parse(req.body.list).replace('[', '').replace(']', '')
     var list_id_merge_trip = json_data.split(',')
-    // console.log("zzzzzzzzzzzzzzzzz:>>>", list_id_merge_trip)
     list_merge_trip = await new Promise((rs) => {
         Trip.getDetailMergeTrips(list_id_merge_trip, (result) => {
-               rs(result)
-            })
+            rs(result)
+        })
     })
     console.log("zzzzzzzzzzzzzzzzz:>>>", list_merge_trip)
-   
+    var i = 0
+    while (i < list_merge_trip.length) {
+        list_free_seats = await new Promise((rs) => {
+            Trip.getFreeSeats(list_merge_trip[i].id, (result) => {
+                rs(result)
+            })
+        })
+
+        list_change_ticket = await new Promise((rs) => {
+            Ticket.getTickets(list_merge_trip[list_merge_trip.length - 1].id, (result) => {
+                rs(result)
+            })
+        })
+        if(list_free_seats.length == list_change_ticket.length){
+            for(var j = 0; j < list_change_ticket.length ; j++){
+                r = await new Promise((rs) => {
+                    Ticket.moveTicketToAnotherTrip(list_change_ticket[j].id, list_merge_trip[i].id, list_free_seats[j].id , (result) => {
+                        rs(result)
+                    })
+                })
+            }
+            i += 1
+            list_merge_trip.pop()
+        }else if (list_free_seats.length > list_change_ticket.length){
+            for(var j = 0; j < list_change_ticket.length ; j++){
+                r = await new Promise((rs) => {
+                    Ticket.moveTicketToAnotherTrip(list_change_ticket[j].id, list_merge_trip[i].id, list_free_seats[j].id , (result) => {
+                        rs(result)
+                    })
+                })
+            }
+            list_merge_trip.pop()
+        }else{
+            for(var j = 0; j < list_free_seats.length ; j++){
+                r = await new Promise((rs) => {
+                    Ticket.moveTicketToAnotherTrip(list_change_ticket[j].id, list_merge_trip[i].id, list_free_seats[j].id , (result) => {
+                        rs(result)
+                    })
+                })
+            }
+            i += 1
+        }
+    }
+
 }
 
 const returnComment = (req, res, next) => {
@@ -194,6 +243,7 @@ module.exports = {
     getAllProvince,
     getAllVehicle,
     getAllVehicleType,
+    getDetailTickets,
     getDoneTrips,
     getStations,
     getReviews,

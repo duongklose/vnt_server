@@ -21,6 +21,8 @@ router.route('/getAllVehicle').get(HomeController.getAllVehicle)
 
 router.route('/getAllVehicleType').get(HomeController.getAllVehicleType)
 
+router.route('/getDetailTickets').get(HomeController.getDetailTickets)
+
 router.route('/getDoneTrips').get(HomeController.getDoneTrips)
 
 router.route('/getStations').get(HomeController.getStations)
