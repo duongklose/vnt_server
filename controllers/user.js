@@ -2,6 +2,15 @@ const User = require('../models/User');
 const JWT = require('jsonwebtoken');
 const { JWT_SECRET } = require('../configs/index');
 const { saveToken } = require('../models/User');
+const Trip = require('../models/Trip')
+
+const getTrips = (req, res) => {
+    Trip.searchTrips(req.query.idStartProvince, req.query.idEndProvince, req.query.time, function (err, trips) {
+        if (err)  res.send(err);
+        res.send(trips)
+
+    });
+}
 
 const encodeToken = (id) => {
     return JWT.sign({
@@ -95,6 +104,7 @@ const verifyToken = (req, res, next) => {
 }
 
 module.exports = {
+    getTrips,
     addAdmin,
     checkLoggedIn,
     getAll,

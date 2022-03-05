@@ -50,7 +50,7 @@ Trip.getDetailMergeTrip = function (id, result) {
     var back_seats = select_from_3 + " " + where_3;
 
     var select = "SELECT general_trip.id, front_seats.num as num_front_seats, back_seats.num  as num_back_seats, general_trip.max"
-    var from = "FROM" + " (" +  general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
+    var from = "FROM" + " (" + general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
     var where = "WHERE general_trip.id=front_seats.id AND general_trip.id=back_seats.id"
 
     var sql = select + " " + from + " " + where
@@ -81,7 +81,7 @@ Trip.getDetailMergeTrips = function (ids, result) {
                     GROUP BY trips.id`
 
     var select = "SELECT general_trip.id, front_seats.num as num_front_seats, back_seats.num  as num_back_seats, general_trip.max"
-    var from = "FROM" + " (" +  general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
+    var from = "FROM" + " (" + general_trip + ") as general_trip, (" + front_seats + ") as front_seats, (" + back_seats + ") as back_seats"
     var where = "WHERE general_trip.id=front_seats.id AND general_trip.id=back_seats.id"
     var order_by = "ORDER BY general_trip.max DESC, front_seats.num DESC"
 
@@ -117,8 +117,8 @@ Trip.getFreeSeats = function (id, result) {
     WHERE booked_seats.id_seat IS NULL`
     dbConn.query(sql, function (err, res) {
         if (err)
-            result( err);
-        result( res);
+            result(err);
+        result(res);
     });
 };
 
@@ -153,6 +153,23 @@ Trip.getTrips = function (id, result) {
         if (err)
             result(null, err);
         result(null, res);
+    });
+};
+
+Trip.searchTrips = function (idStartProvince, idEndProvince, time, result) {
+    var sql = `SELECT trips.id, transportations.logo, transportations.name, transportations.rate_point, coach_type.name as typename, trips.price, trips.start_time, trips.end_time, s1.name as start_station, s2.name as end_station
+                FROM trips, stations as s1, stations as s2, provinces as p1, provinces as p2, coaches, transportations, coach_type
+                WHERE trips.id_start_location = s1.id AND s1.id_province = p1.id AND trips.id_end_location = s2.id AND s2.id_province = p2.id AND trips.id_coach = coaches.id AND coaches.id_transportation = transportations.id AND coaches.type = coach_type.id AND p1.id = ${idStartProvince} AND p2.id = ${idEndProvince} AND trips.start_time LIKE '${time}%'
+                ORDER BY trips.start_time ASC`
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+
+        var r = {
+            "code": "201",
+            "data": res
+        }
+        result(null, r);
     });
 };
 

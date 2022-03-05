@@ -3,15 +3,13 @@ const router = express.Router()
 
 const UserController = require('../controllers/user')
 
+router.route('/getTrips').get(UserController.getTrips)
+
 router.route('/checkLoggedIn')
     .get(UserController.checkLoggedIn)
 
 router.route('/getAll')
     .get(UserController.getAll)
-    .post()
-    .patch()
-    .delete()
-    .put()
 
 router.route('/getUser')
     .get(UserController.getUser)

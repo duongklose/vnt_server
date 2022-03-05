@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use('/uploads', express.static('uploads'))
 
 //Routes
-app.use('/users', userRoute)
+app.use('/user', userRoute)
 app.use('/admin', adminRoute)
 app.use('/', homeRoute)
 app.get('/', (req, res, next) => {
