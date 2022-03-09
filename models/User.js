@@ -28,6 +28,14 @@ User.addAccountTranportation = function (username, pass, id_transportation, resu
     });
 }
 
+User.addUser = function (phone, result) {
+    dbConn.query("INSERT INTO `users`(`phone`, `name`, `role`) VALUES ('" + phone + "', '' , 2)", function (err, res) {
+        if (err)
+            result(null, err);
+        result(null, res);
+    });
+}
+
 User.blockUser = function (phone, result) {
     var sql = "UPDATE `users` SET `blocked`= 1 WHERE phone='" + phone + "'";
     dbConn.query(sql, function (err, res) {
@@ -86,6 +94,17 @@ User.getUserById = function (id, result) {
     dbConn.query("Select * from users where id=" + id, function (err, res) {
         if (err) result(null, err)
         result(null, res)
+    });
+}
+
+User.getUserByPhone = function (phone, result) {
+    dbConn.query("Select id, phone, name from users where phone='" + phone + "'", function (err, res) {
+        if (err) result(null, err)
+        var rs = {
+            "code": "1000",
+            "data": res[0]
+        }
+        result(null, rs)
     });
 }
 

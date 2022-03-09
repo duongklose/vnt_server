@@ -3,12 +3,65 @@ const JWT = require('jsonwebtoken');
 const { JWT_SECRET } = require('../configs/index');
 const { saveToken } = require('../models/User');
 const Trip = require('../models/Trip')
+const Ticket = require('../models/Ticket')
+
+const addTicket = (req, res) => {
+    Ticket.addTicket(req.query.idTrip, req.query.idUser, req.query.idSeat, req.query.bookedDate, req.query.detailStartLocation, req.query.detailEndLocation , function (err, t) {
+        if (err)  res.send(err);
+        res.send(t)
+    });
+}
+
+const getBookedSeats = (req, res) => {
+    Trip.getAllSeats(req.query.idTrip, function (err, seats) {
+        if (err)  res.send(err);
+        res.send(seats)
+    });
+}
+
+const deleteTicket = (req, res) => {
+    Ticket.deleteTicket(req.query.idTicket, function (err, tickets) {
+        if (err)  res.send(err);
+        res.send(tickets)
+    });
+}
+
+const getMyTicket = (req, res) => {
+    Ticket.getMyTicket(req.query.idUser, function (err, tickets) {
+        if (err)  res.send(err);
+        res.send(tickets)
+    });
+}
+
+const getOldTicket = (req, res) => {
+    Ticket.getOldTicket(req.query.idUser, function (err, tickets) {
+        if (err)  res.send(err);
+        res.send(tickets)
+    });
+}
 
 const getTrips = (req, res) => {
     Trip.searchTrips(req.query.idStartProvince, req.query.idEndProvince, req.query.time, function (err, trips) {
         if (err)  res.send(err);
         res.send(trips)
 
+    });
+}
+
+const getUserByPhone = (req, res) => {
+    User.getUserByPhone(req.query.phone, function (err, user) {
+        if (err)  res.send(err);
+        if(user.length > 0){
+            res.send(user)
+        }else{
+            User.addUser(req.query.phone, function (err, r) {
+                if (err) res.send(err);
+                User.getUserByPhone(req.query.phone, function (err, u) {
+                    if (err) res.send(err);
+                        res.send(u)
+                });
+            });
+        }
     });
 }
 
@@ -104,6 +157,12 @@ const verifyToken = (req, res, next) => {
 }
 
 module.exports = {
+    deleteTicket,
+    addTicket,
+    getUserByPhone,
+    getBookedSeats,
+    getMyTicket,
+    getOldTicket,
     getTrips,
     addAdmin,
     checkLoggedIn,

@@ -36,6 +36,26 @@ Trip.endTrip = function (id_trip, result) {
     });
 };
 
+Trip.getAllSeats = function (idTrip, result) {
+    var sql = `SELECT seats.id, seats.alias as name,
+                    CASE
+                        WHEN seats.id in (SELECT seats.id FROM seats, tickets WHERE seats.id = tickets.id_seat AND tickets.id_trip = ${idTrip}) THEN 2
+                        ELSE seats.state
+                    END as state, seats.floor 
+                FROM seats, coaches, trips
+                WHERE seats.id_coach_type = coaches.type AND trips.id_coach = coaches.id AND trips.id = ${idTrip}`
+    dbConn.query(sql, function (err, res) {
+        if (err)
+            result(null, err);
+
+        var r = {
+            "code": "1000",
+            "data": res
+        }
+        result(null, r);
+    });
+};
+
 Trip.getDetailMergeTrip = function (id, result) {
     var select_from_1 = "SELECT trips.id, coach_type.num_of_seats as max FROM trips, coaches, coach_type"
     var where_1 = "WHERE trips.id_coach=coaches.id AND coaches.type = coach_type.id AND trips.id = " + id;
